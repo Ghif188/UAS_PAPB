@@ -1,10 +1,17 @@
 package com.example.uaspapb
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import com.example.uaspapb.databinding.FragmentProfileBinding
+import com.example.uaspapb.databinding.ListFilmUserBinding
+import com.google.firebase.firestore.FirebaseFirestore
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +27,8 @@ class Profile : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var binding: FragmentProfileBinding
+    private var db = FirebaseFirestore.getInstance().collection("users")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,10 +42,45 @@ class Profile : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        binding = FragmentProfileBinding.inflate(inflater, container, false)
+        getData()
+        binding.btnLogout.setOnClickListener {
+            val intentToLogin = Intent(activity, MainActivity::class.java)
+            val sharedPreferences = activity?.getSharedPreferences("account_data", AppCompatActivity.MODE_PRIVATE)
+            with(sharedPreferences!!.edit()) {
+                putString("token", null)
+                putString("role", null)
+                commit()
+            }
+            val sharedPref = context?.getSharedPreferences("account_data", Context.MODE_PRIVATE)
+            val token = sharedPref?.getString("token", "")
+            Log.d("Profile", token.toString())
+            startActivity(intentToLogin)
+        }
+        return binding.root
     }
 
+    private fun getData(){
+        val sharedPref = context?.getSharedPreferences("account_data", Context.MODE_PRIVATE)
+        val token = sharedPref?.getString("token", "")
+        if (token != ""){
+            val docRef = db.document(token!!)
+            docRef.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val email = documentSnapshot.getString("email")
+                        val username = documentSnapshot.getString("username")
+                        binding.email.text = email
+                        binding.username.text = username
+                    } else {
+                        // Dokumen tidak ditemukan
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d("HELLO", exception.toString())
+                }
+        }
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

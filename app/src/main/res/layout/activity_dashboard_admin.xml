@@ -4,37 +4,80 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DashboardAdmin">
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Kelola Film"
-        android:fontFamily="@font/poppins_semibold"
-        android:textSize="30dp"
-        android:padding="5dp"
-        android:background="@color/green"
-        android:textColor="@color/white"
-        android:textAlignment="center"/>
+    tools:context=".DashboardAdmin"
+    android:background="@drawable/bg_form">
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/title">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvFilm"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingVertical="10dp"
+                android:paddingHorizontal="15dp"
+                android:background="#55527853">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+                    <ImageView
+                        android:id="@+id/ic_profil"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/ic_circle_person"/>
+                    <TextView
+                        android:layout_toRightOf="@id/ic_profil"
+                        android:textSize="17dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Admin"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/poppins_reguler"/>
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/btn_logout"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/ic_logout"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Kelola Film"
+                android:fontFamily="@font/poppins_semibold"
+                android:textSize="30dp"
+                android:padding="5dp"
+                android:textColor="@color/white"
+                android:textAlignment="center"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFilm"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="true"/>
+        </LinearLayout>
     </ScrollView>
-    <ImageView
+    <androidx.cardview.widget.CardView
         android:id="@+id/btn_add"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:padding="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:background="@drawable/bg_btn_add"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_add"/>
+        app:cardCornerRadius="20dp"
+        app:cardElevation="10dp">
+        <ImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:background="@drawable/bg_btn_add"
+            android:padding="10dp"
+            android:src="@drawable/ic_add" />
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>

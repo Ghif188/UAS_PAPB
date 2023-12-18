@@ -28,6 +28,16 @@ class DashboardAdmin : AppCompatActivity() {
                 val intentToFormFilm = Intent(this@DashboardAdmin, FormFilm::class.java)
                 startActivity(intentToFormFilm)
             }
+            btnLogout.setOnClickListener {
+                val sharedPreferences = getSharedPreferences("account_data", AppCompatActivity.MODE_PRIVATE)
+                with(sharedPreferences!!.edit()) {
+                    putString("token", null)
+                    putString("role", null)
+                    commit()
+                }
+                val intentToFormFilm = Intent(this@DashboardAdmin, MainActivity::class.java)
+                startActivity(intentToFormFilm)
+            }
         }
         observeFilms()
         getAllFilms()
@@ -37,7 +47,7 @@ class DashboardAdmin : AppCompatActivity() {
     }
     private fun observeFilms() {
         filmListLiveData.observe(this) { film ->
-            val adapterFilm = FilmAdapter(film.toMutableList()) { film ->
+            val adapterFilm = FilmAdapter(this, film.toMutableList()) { film ->
                 Toast.makeText(this, "You clicked on ${film.nama_film} ", Toast.LENGTH_SHORT).show()
             }
             binding.rvFilm.apply {

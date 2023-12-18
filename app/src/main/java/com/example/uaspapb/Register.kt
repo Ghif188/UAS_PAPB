@@ -1,5 +1,6 @@
 package com.example.uaspapb
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.uaspapb.databinding.FragmentRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthSettings
@@ -50,41 +52,49 @@ class Register : Fragment() {
             val confirmPassword = binding.confirmPassword.text.toString()
             val data = User(username = username, email = email, password = password, role = "user")
             if (username == null || email == null || password == null || confirmPassword == null){
-                Toast.makeText(activity, "Gagal membuat ASKOAS.",
-                    Toast.LENGTH_SHORT).show()
+                if (password != confirmPassword){
+                    Toast.makeText(activity, "Gagal membuat akun, password konfirmasi tidak sama",
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(activity, "Gagal membuat akun, harap inputan diisikan semua.",
+                        Toast.LENGTH_SHORT).show()
+                }
             } else {
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener{ task ->
-                        if (task.isSuccessful) {
-                            Log.d("Halo", task.result.toString())
-                            val user = auth.currentUser
-                            val userId = user?.uid
-                            if (userId != null) {
-                                firestore.collection("users").document(userId)
-                                    .set(data)
-                                    .addOnSuccessListener {
-                                        // Data pengguna berhasil disimpan
-                                    }
-                                    .addOnFailureListener { e ->
-                                        // Gagal menyimpan data pengguna
-                                        Log.w("Firestore", "Gagal menyimpan data pengguna", e)
-                                    }
+                if (password != confirmPassword){
+                    Toast.makeText(activity, "Gagal membuat akun, password konfirmasi tidak sama",
+                        Toast.LENGTH_SHORT).show()
+                } else {
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener{ task ->
+                            if (task.isSuccessful) {
+                                Log.d("Halo", task.result.toString())
+                                val user = auth.currentUser
+                                val userId = user?.uid
+                                if (userId != null) {
+                                    firestore.collection("users").document(userId)
+                                        .set(data)
+                                        .addOnSuccessListener {
+                                            val sharedPreferences = activity?.getSharedPreferences("account_data", AppCompatActivity.MODE_PRIVATE)
+                                            with(sharedPreferences!!.edit()) {
+                                                putString("token", userId)
+                                                putString("role", "user")
+                                                commit()
+                                            }
+                                            val intentToDashboardUser = Intent(activity, DashboardUser::class.java)
+                                            startActivity(intentToDashboardUser)
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.w("Firestore", "Gagal menyimpan data pengguna", e)
+                                        }
+                                }
+                            } else {
+                                Toast.makeText(activity, "Gagal membuat akun.", Toast.LENGTH_SHORT).show()
                             }
-                        } else {
-                            // Gagal membuat akun pengguna baru
-                            Toast.makeText(activity, "Gagal membuat akun.",
-                                Toast.LENGTH_SHORT).show()
-                            Log.d("Error", task.toString())
                         }
-                    }
-                    .addOnFailureListener { e ->
-                        // Tangkap dan tampilkan kesalahan
-                        Toast.makeText(activity, "Gagal mendaftar: ${e.message}",
-                            Toast.LENGTH_SHORT).show()
-
-                        // Anda juga dapat menampilkan informasi kesalahan lebih detail ke logcat
-                        Log.e("FirebaseAuth", "Gagal mendaftar", e)
-                    }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(activity, "Gagal mendaftar: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
             }
         }
         return binding.root
