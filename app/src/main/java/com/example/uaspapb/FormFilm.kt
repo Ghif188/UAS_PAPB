@@ -47,24 +47,25 @@ class FormFilm : AppCompatActivity() {
                 binding.posterImage.visibility = View.VISIBLE
                 binding.txtBtnPoster.text = "Ubah Poster"
                 binding.namaFilm.setText(dataDetail.nama_film)
-                binding.namaDirector.setText(dataDetail.nama_film)
+                binding.namaDirector.setText(dataDetail.director)
                 val initialValuePosition = genreAdapter.getPosition(dataDetail.genre)
                 binding.genre.setSelection(initialValuePosition)
                 binding.rate.setText(dataDetail.rate)
                 binding.sinopsis.setText(dataDetail.desc)
-                if (imageLink == null){
-                    btnSave.setOnClickListener {
+                Log.d("URI", imageUri.toString())
+                btnSave.setOnClickListener {
+                    if (imageUri == null){
                         val film = binding.namaFilm.text.toString()
                         val director = binding.namaDirector.text.toString()
                         val genreFilm = binding.genre.selectedItem.toString()
                         val rateFilm = binding.rate.text.toString()
                         val sinopsisFilm = binding.sinopsis.text.toString()
-                        val data = Film(nama_film = film, director = director, genre = genreFilm, rate = rateFilm, desc = sinopsisFilm)
+                        val data = Film(id = dataDetail.id,nama_film = film, director = director, genre = genreFilm, rate = rateFilm, desc = sinopsisFilm, poster = dataDetail.poster)
                         updateFilm(data)
-                    }
-                } else {
-                    btnSave.setOnClickListener {
-                        addPoster(imageUri!!)
+                    } else {
+                        btnSave.setOnClickListener {
+                            addPoster(imageUri!!)
+                        }
                     }
                 }
             } else {
@@ -78,6 +79,7 @@ class FormFilm : AppCompatActivity() {
             }
             btnUploadImg.setOnClickListener{
                 getContent.launch("image/*")
+                Log.d("URI5", imageUri.toString())
             }
         }
     }
